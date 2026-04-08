@@ -42,7 +42,11 @@ export function AuthProvider({ children }) {
   const login = async (email, password) => {
     try {
       const user = await authAPI.login({ email, password });
-      if (user.token) localStorage.setItem("userToken", user.token);
+      if (user.token) {
+        localStorage.setItem("userToken", user.token);
+        // Set a non-httpOnly cookie on the Vercel domain so the middleware can see it
+        document.cookie = `token=${user.token}; path=/; max-age=${7 * 24 * 60 * 60}; samesite=lax`;
+      }
       setUser(user);
       return { success: true };
     } catch (error) {
@@ -53,7 +57,11 @@ export function AuthProvider({ children }) {
   const register = async (username, email, password) => {
     try {
       const user = await authAPI.register({ username, email, password });
-      if (user.token) localStorage.setItem("userToken", user.token);
+      if (user.token) {
+        localStorage.setItem("userToken", user.token);
+        // Set a non-httpOnly cookie on the Vercel domain so the middleware can see it
+        document.cookie = `token=${user.token}; path=/; max-age=${7 * 24 * 60 * 60}; samesite=lax`;
+      }
       setUser(user);
       return { success: true };
     } catch (error) {
@@ -64,6 +72,7 @@ export function AuthProvider({ children }) {
   const logout = async () => {
     await authAPI.logout();
     localStorage.removeItem("userToken");
+    document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
     setUser(null);
     router.push('/login');
   };

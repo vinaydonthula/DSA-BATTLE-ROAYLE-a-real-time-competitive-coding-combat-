@@ -7,7 +7,9 @@ export function middleware(request) {
   const publicRoutes = ['/login', '/register', '/admin/login'];
   const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route));
 
-  if (!isPublicRoute && !token && pathname !== '/') {
+  // RELAXED FOR CROSS-DOMAIN SUPPORT:
+  // We let /dashboard pass through so client-side Bearer tokens can work.
+  if (!isPublicRoute && !token && pathname !== '/' && !pathname.startsWith('/dashboard')) {
     const loginUrl = new URL('/login', request.url);
     loginUrl.searchParams.set('redirect', pathname);
     return NextResponse.redirect(loginUrl);
