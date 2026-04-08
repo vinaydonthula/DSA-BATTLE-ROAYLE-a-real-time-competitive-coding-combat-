@@ -42,10 +42,20 @@ exports.register = async (req, res) => {
       password_hash: hashedPassword,
     });
 
+    const token = createToken(user);
+    const isProduction = process.env.NODE_ENV === "production" || (process.env.CLIENT_URL && !process.env.CLIENT_URL.includes("localhost"));
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      sameSite: isProduction ? "none" : "lax",
+      secure: isProduction,
+    });
+
     res.status(201).json({
       id: user.id,
       username: user.username,
       email: user.email,
+      token: token
     });
   } catch (err) {
     console.error(err);
@@ -77,6 +87,7 @@ exports.login = async (req, res) => {
       id: user.id,
       username: user.username,
       email: user.email,
+      token: token
     });
   } catch (err) {
     res.status(500).json({ message: "Server error" });

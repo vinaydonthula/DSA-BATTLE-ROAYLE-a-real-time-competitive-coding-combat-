@@ -3,10 +3,17 @@ const API_BASE = process.env.NEXT_PUBLIC_API_URL;
 /* ---------------- HELPERS ---------------- */
 
 async function request(url, options = {}) {
+  let token = null;
+  if (typeof window !== "undefined") {
+    token = localStorage.getItem("userToken");
+  }
+
   const res = await fetch(`${API_BASE}${url}`, {
     credentials: 'include', // cookies are sent automatically
     headers: {
       'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(options.headers || {})
     },
     ...options,
   });

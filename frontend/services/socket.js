@@ -10,9 +10,17 @@ class SocketService {
 
     const SOCKET_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
+    let token = null;
+    if (typeof window !== "undefined") {
+      token = localStorage.getItem("userToken");
+    }
+
     this.socket = io(SOCKET_URL, {
       withCredentials: true,
       transports: ["websocket"],
+      auth: {
+        token: token
+      }
     });
 
     this.socket.on("connect", () => {

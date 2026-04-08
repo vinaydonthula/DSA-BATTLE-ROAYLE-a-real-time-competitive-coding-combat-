@@ -29,6 +29,7 @@ export function AuthProvider({ children }) {
   const login = async (email, password) => {
     try {
       const user = await authAPI.login({ email, password });
+      if (user.token) localStorage.setItem("userToken", user.token);
       setUser(user);
       return { success: true };
     } catch (error) {
@@ -39,6 +40,7 @@ export function AuthProvider({ children }) {
   const register = async (username, email, password) => {
     try {
       const user = await authAPI.register({ username, email, password });
+      if (user.token) localStorage.setItem("userToken", user.token);
       setUser(user);
       return { success: true };
     } catch (error) {
@@ -48,6 +50,7 @@ export function AuthProvider({ children }) {
 
   const logout = async () => {
     await authAPI.logout();
+    localStorage.removeItem("userToken");
     setUser(null);
     router.push('/login');
   };
