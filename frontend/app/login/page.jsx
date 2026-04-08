@@ -100,7 +100,10 @@ export default function LoginPage() {
               {loading ? (
                 <>
                   <Loader2 className="w-5 h-5 animate-spin" />
-                  <span>Signing in...</span>
+                  <div className="flex flex-col items-center">
+                    <span>Signing in...</span>
+                    <span className="text-[10px] opacity-70">Server may take 45s to wake up</span>
+                  </div>
                 </>
               ) : (
                 <span>Sign In</span>
