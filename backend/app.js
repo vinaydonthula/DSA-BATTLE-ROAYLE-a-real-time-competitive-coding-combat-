@@ -16,6 +16,8 @@ const executeRoutes = require("./src/routes/execute.routes");
 
 const app = express();
 
+app.set("trust proxy", 1); // crucial for Render deployed secure cookies
+
 app.use(express.json());
 app.use(cookieParser());
 
