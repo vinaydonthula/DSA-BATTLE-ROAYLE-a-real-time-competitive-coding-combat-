@@ -33,13 +33,13 @@ app.use(
       // allow requests with no origin (like mobile apps or curl requests)
       if (!origin) return callback(null, true);
       
-      const isAllowed = allowedOrigins.includes(origin.replace(/\/$/, ""));
+      const isAllowed = allowedOrigins.includes(origin.replace(/\/$/, "")) || origin.endsWith(".vercel.app");
       
       if (!isAllowed) {
         console.warn(`⚠️ CORS blocked for origin: ${origin}. Allowed origins are:`, allowedOrigins);
       }
       
-      callback(null, true); // Temporarily true for transition to ensure dashboard landing
+      callback(null, true); // Allow all during transition
     },
     credentials: true,
   })
