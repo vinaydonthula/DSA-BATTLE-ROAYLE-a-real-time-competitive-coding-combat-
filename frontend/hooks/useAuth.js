@@ -18,7 +18,7 @@ export function AuthProvider({ children }) {
       if (storedToken && !user) {
         // We have a token, so we're probably logged in. 
         // Let's set a temporary state to prevent the dashboard from kicking us out while the backend wakes up.
-        setUser({ loading: true, isReturning: true }); 
+        setUser({ username: "Warrior", loading: true, isReturning: true }); 
       }
 
       try {
