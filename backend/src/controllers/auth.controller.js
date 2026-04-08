@@ -65,11 +65,12 @@ exports.login = async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials" });
 
     const token = createToken(user);
+    const isProduction = process.env.NODE_ENV === "production" || (process.env.CLIENT_URL && !process.env.CLIENT_URL.includes("localhost"));
 
     res.cookie("token", token, {
       httpOnly: true,
-      sameSite: "lax",
-      secure: false, // true in prod
+      sameSite: isProduction ? "none" : "lax",
+      secure: isProduction, 
     });
 
     res.json({
@@ -84,10 +85,12 @@ exports.login = async (req, res) => {
 
 exports.logout = async (req, res) => {
   try {
+    const isProduction = process.env.NODE_ENV === "production" || (process.env.CLIENT_URL && !process.env.CLIENT_URL.includes("localhost"));
+
     res.clearCookie('token', {
       httpOnly: true,
-      sameSite: 'lax',
-      secure: false, // true in production (https)
+      sameSite: isProduction ? 'none' : 'lax',
+      secure: isProduction,
     });
 
     return res.json({ message: 'Logged out successfully' });
