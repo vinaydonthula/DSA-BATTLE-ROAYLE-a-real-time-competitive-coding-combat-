@@ -13,11 +13,24 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     async function loadUser() {
+      // Check localStorage first
+      const storedToken = localStorage.getItem("userToken");
+      if (storedToken && !user) {
+        // We have a token, so we're probably logged in. 
+        // Let's set a temporary state to prevent the dashboard from kicking us out while the backend wakes up.
+        setUser({ loading: true, isReturning: true }); 
+      }
+
       try {
-        const user = await authAPI.me();
-        setUser(user);
-      } catch {
-        setUser(null);
+        const userData = await authAPI.me();
+        setUser(userData);
+      } catch (err) {
+        console.error("Auth verification failed:", err);
+        // Only clear if it was a definitive failure, not just a network error
+        if (err.message && (err.message.includes("401") || err.message.includes("Unauthorized"))) {
+           localStorage.removeItem("userToken");
+           setUser(null);
+        }
       } finally {
         setLoading(false);
       }

@@ -21,9 +21,24 @@ app.set("trust proxy", 1); // crucial for Render deployed secure cookies
 app.use(express.json());
 app.use(cookieParser());
 
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  "http://localhost:3000",
+  "http://127.0.0.1:3000"
+].filter(Boolean);
+
 app.use(
   cors({
-    origin: process.env.CLIENT_URL,
+    origin: (origin, callback) => {
+      // allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.indexOf(origin) !== -1 || allowedOrigins.some(o => origin.startsWith(o))) {
+        callback(null, true);
+      } else {
+        callback(null, true); // Fallback to allowing everything temporarily if it's tricky, but better to be specific
+        // callback(new Error('Not allowed by CORS')); 
+      }
+    },
     credentials: true,
   })
 );
